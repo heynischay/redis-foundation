@@ -27,6 +27,12 @@ app.get("/banner", async (req, res, next) => {
   return res.json({ banner });
 });
 
+app.get("/banner/key", async (req, res, next) => {
+  const exists = await redis.get(BANNER_KEY);
+
+  return res.json({ exists: !!exists });
+});
+
 app.delete("/banner", async (req, res, next) => {
   await redis.del(BANNER_KEY);
   res.json({ success: true });
