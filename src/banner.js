@@ -5,6 +5,7 @@ import { BANNER_KEY } from "./constants.js";
 const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 const app = express();
 app.use(express.json());
+
 app.post("/banner", async (req, res, next) => {
   const banner = req.body.banner;
 
@@ -14,11 +15,13 @@ app.post("/banner", async (req, res, next) => {
     return res.json({ sucess: false, message: "banner must be required" });
   }
 
+  // setting a key in memmory
   await redis.set(BANNER_KEY, banner);
   return res.json({ sucess: true, message: `banner :${banner} created` });
 });
 
 app.get("/banner", async (req, res, next) => {
+  // reading a value via that key
   const banner = await redis.get(BANNER_KEY);
 
   if (!banner) {
@@ -28,12 +31,14 @@ app.get("/banner", async (req, res, next) => {
 });
 
 app.get("/banner/key", async (req, res, next) => {
+  // checking the existence of the key (only for practise )
   const exists = await redis.get(BANNER_KEY);
 
   return res.json({ exists: !!exists });
 });
 
 app.delete("/banner", async (req, res, next) => {
+  // deleting a key => value
   await redis.del(BANNER_KEY);
   res.json({ success: true });
 });
